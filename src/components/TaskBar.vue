@@ -2,7 +2,8 @@
 import { computed, UnwrapNestedRefs, reactive, getCurrentInstance } from 'vue'
 import type { Component } from 'vue'
 import { useDialogStore } from '@/stores/index'
-import Dialog from '@/components/Dialog.vue'
+import STDialog from '@/components/Dialog.vue'
+import type { Dialog } from '@/dialog'
 
 const instance = getCurrentInstance()
 
@@ -57,9 +58,9 @@ function resizeHandle(dialog: Dialog<Component>) {
         >
         <span>{{ dialog.title }}</span>
         <Teleport to="body">
-          <Dialog :dialog="dialog" @on-resize="resizeHandle">
+          <STDialog :dialog="dialog" @on-resize="resizeHandle">
             <component :is="dialog.component" :ref="dialog.id" />
-          </Dialog>
+          </STDialog>
         </Teleport>
       </div>
     </div>

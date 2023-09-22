@@ -3,6 +3,7 @@ import { computed, Ref, ref, reactive, getCurrentInstance, onMounted } from 'vue
 import type { Component } from 'vue'
 import { useDialogStore } from '@/stores/index'
 import { SquareSmall, CloseSmall, Minus, Sum } from '@icon-park/vue-next'
+import type { Dialog, Position } from '@/dialog'
 
 const store = useDialogStore()
 const props = defineProps<{

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Dialog } from '@/dialog'
 import type { Component } from 'vue'
 
 function onResize(dialog: Dialog<Component>) {

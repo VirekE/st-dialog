@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { reactive, UnwrapNestedRefs, computed } from 'vue'
 import type { Component } from 'vue'
+import type { Dialog, DialogOptions, DialogStore } from '@/dialog'
 
 
 const dialogStore: (() => DialogStore<Component>) = () => {

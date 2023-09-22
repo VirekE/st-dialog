@@ -1,4 +1,6 @@
-interface DialogStore<T> {
+import { ComputedRef, UnwrapNestedRefs } from 'vue'
+
+export interface DialogStore<T> {
   dialogList: UnwrapNestedRefs<Dialog<T>[]>,
   count: ComputedRef<number>,
   visibleDialogList: ComputedRef<Dialog<T>[]>,
@@ -16,17 +18,17 @@ interface DialogStore<T> {
   getZIndex(id: string): number
 }
 
-interface Position {
+export interface Position {
   x: number // x轴坐标
   y: number // y轴坐标
 }
 
-interface State {
+export interface State {
   minimized: boolean // 是否已经最小化
   maximized: boolean // 是否已经最大化
 }
 
-interface Property {
+export interface Property {
   minimizable: boolean // 是否可最小化
   maximizable: boolean // 是否可最大化
   resizable: boolean // 是否可调整大小
@@ -41,7 +43,7 @@ interface Property {
   height: number // 默认高度
 }
 
-interface Dialog<T> {
+export interface Dialog<T> {
   id: string // 唯一标识
   name: string // 窗口名称
   title?: string // 窗口标题
@@ -52,7 +54,7 @@ interface Dialog<T> {
   property: Property // 窗口属性
 }
 
-interface DialogOptions {
+export interface DialogOptions {
   id?: string // 唯一标识
   name?: string // 窗口名称
   title?: string // 窗口标题
