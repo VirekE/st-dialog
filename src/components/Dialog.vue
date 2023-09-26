@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, Ref, ref, reactive, getCurrentInstance, onMounted } from 'vue'
+import { computed, Ref, ref, reactive, onMounted } from 'vue'
 import type { Component } from 'vue'
 import { useDialogStore } from '@/stores/index'
 import { SquareSmall, CloseSmall, Minus, Sum } from '@icon-park/vue-next'
@@ -23,6 +23,7 @@ const position = computed(() => {
     max: dialog.value.state.maximized,
   }
 })
+
 const MaxIcon = computed(() => position.value.max ? Sum : SquareSmall)
 const emit = defineEmits<{
   (e: 'on-resize', dialog: Dialog<Component>): any
@@ -249,36 +250,36 @@ function resize() {
  * 获取窗口尺寸
  */
 function getDocumentSize() {
-  const { offsetWidth, offsetHeight } = document.body
-  return { docWidth: offsetWidth, docHeight: offsetHeight }
+  const { innerWidth, innerHeight } = window
+  return { docWidth: innerWidth, docHeight: innerHeight }
 }
 /**
  * 初始化窗口尺寸和位置
  */
 function initDialogSize() {
-  const id_value = id.value
-  const instance = getCurrentInstance()
-  const { docWidth, docHeight } = getDocumentSize()
-  const centerX = docWidth / 2
-  const centerY = docHeight / 2
-  if (!instance?.proxy?.$el) return
-  const { offsetWidth, offsetHeight } = instance.proxy.$el as HTMLDivElement
-  const p = position.value
-  p.top = Math.floor(centerY - offsetHeight / 2)
-  p.left = Math.floor(centerX - offsetWidth / 2)
-  if (position) {
-    const { top, left, width, height } = position.value
-    // store.toggleMaximizeDialog(id_value)
-    if (width) store.resizeDialog(id_value, { width })
-    else {
-      store.moveDialog(id_value, { x: Math.floor(centerX - offsetWidth / 2) })
-    }
-    if (height) store.resizeDialog(id_value, { height })
-    else {
-      store.moveDialog(id_value, { y: Math.floor(centerY - offsetHeight / 2) })
-    }
-    store.moveDialog(id_value, { x: left, y: top })
-  }
+  // const id_value = id.value
+  // const instance = getCurrentInstance()
+  // const { docWidth, docHeight } = getDocumentSize()
+  // const centerX = docWidth / 2
+  // const centerY = docHeight / 2
+  // if (!instance?.proxy?.$el) return
+  // const { offsetWidth, offsetHeight } = instance.proxy.$el as HTMLDivElement
+  // const p = position.value
+  // p.top = Math.floor(centerY - offsetHeight / 2)
+  // p.left = Math.floor(centerX - offsetWidth / 2)
+  // if (position) {
+  //   const { top, left, width, height } = position.value
+  //   // store.toggleMaximizeDialog(id_value)
+  //   if (width) store.resizeDialog(id_value, { width })
+  //   else {
+  //     store.moveDialog(id_value, { x: Math.floor(centerX - offsetWidth / 2) })
+  //   }
+  //   if (height) store.resizeDialog(id_value, { height })
+  //   else {
+  //     store.moveDialog(id_value, { y: Math.floor(centerY - offsetHeight / 2) })
+  //   }
+  //   store.moveDialog(id_value, { x: left, y: top })
+  // }
 }
 /**
  * 拖拽窗口处理方法：
@@ -448,142 +449,7 @@ function limitedPosition(x: number, y: number): Position {
     <div class="br" @mousedown="manualResize" />
   </div>
 </template>
-<style lang="sass" scoped>
-div 
-  box-sizing: border-box
-.ys-dialog[movable='true']:not([max='true']) 
-  box-sizing: border-box
-  *
-    box-sizing: border-box
-  .main-panel > .header
-    cursor: move
-    .btn-group
-      cursor: default
 
-
-.ys-dialog[resizable='true']:not([max='true'])
-  & > .tl
-    cursor: se-resize
-  & > .tm
-    cursor: s-resize
-  & > .tr
-    cursor: sw-resize
-  & > .lm
-    cursor: w-resize
-  & > .rm
-    cursor: e-resize
-  & > .bl
-    cursor: ne-resize
-  & > .bm
-    cursor: n-resize
-  & > .br
-    cursor: nw-resize
-
-.ys-dialog
-  position: fixed
-  top: 0
-  left: 0
-  width: 500px
-  height: 500px
-
-  display: -ms-grid
-  display: grid
-
-  // outline: 1px solid #58f;
-
-  grid-template-rows: 6px calc(100% - 12px) 6px
-  grid-template-columns: 6px calc(100% - 12px) 6px
-
-  -ms-user-select: none
-  -webkit-user-select: none
-  user-select: none
-
-  &:focus 
-    outline: none
-
-  .cover
-    border: 3px double #fff4
-    background: #0009
-    pointer-events: none
-
-  .main-panel
-    position: relative
-    width: calc(100% + 6px)
-    height: calc(100% + 6px)
-    margin: -3px
-
-    background: #051229bb
-    color: #000
-    border: 1px solid #45515e
-    box-shadow: 1px 1px 3px 2px #000
-
-    overflow: hidden
-
-    & > .dialog-body
-      position: relative
-      width: 100%
-      height: calc(100% - 32px)
-      overflow: hidden
-
-    & > .dialog-body.moving
-      pointer-events: none
-
-    & > .header
-      position: relative
-      width: 100%
-      height: 32px
-      line-height: 32px
-
-      padding: 0 0 0 5px
-
-      display: flex
-      justify-content: space-between
-      align-items: center
-
-      background: #324c70d3
-      color: #efefef
-
-      .title
-        display: flex
-        flex-grow: 1
-        height: 100%
-        align-items: center
-        overflow: hidden
-
-        margin: -2px 0 0 5px
-
-        line-height: 23px
-        font-size: 14px
-
-      .btn-group
-        display: flex
-        flex-direction: row
-        font-size: 16px
-
-        .btn.close:hover
-          background: #f66
-
-        .btn
-          display: block
-          transition: all 0.2s ease-in-out
-          .iconfont
-            font-size: 12px
-          &:hover
-            background: #fff3
-
-        .btn
-          width: 2em
-          height: 1.75em
-          line-height: 1.75em
-          text-align: center
-          cursor: pointer
-
-          &:hover
-            filter: brightness(1.2)
-
-          &:active
-            filter: brightness(0.5)
-
-        .btn + .btn
-          margin-left: 2px
+<style lang="sass">
+@import "@/assets/main.sass"
 </style>

@@ -1,6 +1,6 @@
 import { ComputedRef, UnwrapNestedRefs } from 'vue'
 
-export interface DialogStore<T> {
+export declare interface DialogStore<T> {
   dialogList: UnwrapNestedRefs<Dialog<T>[]>,
   count: ComputedRef<number>,
   visibleDialogList: ComputedRef<Dialog<T>[]>,
@@ -9,7 +9,7 @@ export interface DialogStore<T> {
   isOnTop: (id: string) => boolean,
   toTop: (id: string) => void,
   getDialog(id: string): Dialog<T> | undefined,
-  addDialog: (dialog: T, options: DialogOptions) => void,
+  addDialog: (component: T, options: DialogOptions) => void,
   removeDialog: (id: string) => boolean,
   toggleMinimizeDialog: (id: string) => boolean,
   toggleMaximizeDialog: (id: string) => boolean,
@@ -18,17 +18,17 @@ export interface DialogStore<T> {
   getZIndex(id: string): number
 }
 
-export interface Position {
+export declare interface Position {
   x: number // x轴坐标
   y: number // y轴坐标
 }
 
-export interface State {
+export declare interface State {
   minimized: boolean // 是否已经最小化
   maximized: boolean // 是否已经最大化
 }
 
-export interface Property {
+export declare interface Property {
   minimizable: boolean // 是否可最小化
   maximizable: boolean // 是否可最大化
   resizable: boolean // 是否可调整大小
@@ -43,7 +43,7 @@ export interface Property {
   height: number // 默认高度
 }
 
-export interface Dialog<T> {
+export declare interface Dialog<T> {
   id: string // 唯一标识
   name: string // 窗口名称
   title?: string // 窗口标题
@@ -52,9 +52,10 @@ export interface Dialog<T> {
   component: T // 窗口内组件
   state: State // 窗口状态
   property: Property // 窗口属性
+  args?: Record<string, any> // 需要向窗口内组件传递的参数
 }
 
-export interface DialogOptions {
+export declare interface DialogOptions {
   id?: string // 唯一标识
   name?: string // 窗口名称
   title?: string // 窗口标题
@@ -81,4 +82,5 @@ export interface DialogOptions {
     width?: number // 默认宽度
     height?: number // 默认高度
   }
+  args?: Record<string, any> // 窗口内组件的props
 }

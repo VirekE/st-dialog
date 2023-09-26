@@ -24,14 +24,17 @@ const dialogStore: (() => DialogStore<Component>) = () => {
 
   function addDialog(component: Component, options: DialogOptions) {
     const id = crypto.randomUUID()
+    const { innerWidth, innerHeight } = window
+    const x = (innerWidth - (options.property?.width || 800)) / 2
+    const y = (innerHeight - (options.property?.height || 500)) / 2
     const dialog: Dialog<Component> = reactive({
       id: options.id || id,
       name: options.name || id,
       icon: options.icon || '',
       title: options.title || '窗口',
       position: {
-        x: options.position?.x || 0,
-        y: options.position?.y || 0
+        x: (options.position?.x) || x,
+        y: (options.position?.y) || y
       },
       component,
       state: {
@@ -51,7 +54,8 @@ const dialogStore: (() => DialogStore<Component>) = () => {
         maxHeight: options.property?.maxHeight || 0,
         width: options.property?.width || 800,
         height: options.property?.height || 500
-      }
+      },
+      args: options.args
     })
     indexQueue.push(dialog.id)
     dialogList.push(dialog)
@@ -99,6 +103,7 @@ const dialogStore: (() => DialogStore<Component>) = () => {
 
   function moveDialog(id: string, position: { x?: number, y?: number, width?: number, height?: number }): boolean {
     const dialog = getDialog(id)
+    console.log(position)
     if (dialog) {
       if (position.x) {
         dialog.position.x = position.x

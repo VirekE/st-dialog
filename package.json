@@ -1,12 +1,22 @@
 {
   "name": "st-dialog",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "A simple dialog component for Vue 3",
   "type": "module",
-  "main": "dist/st-dialog.cjs.js",
-  "module": "dist/st-dialog.es.js",
-  "browser": "dist/st-dialog.umd.js",
-  "types": "dist/types/dialog.d.ts",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/st-dialog.umd.js",
+  "module": "dist/st-dialog.js",
+  "types": "dist/st-dialog.d.ts",
+  "exports": {
+    "./dist/style.css": "./dist/style.css",
+    "./css": "./dist/style.css",
+    ".": {
+      "import": "./dist/st-dialog.js",
+      "require": "./dist/st-dialog.umd.js"
+    }
+  },
   "author": "VirekE",
   "license": "MIT",
   "scripts": {
@@ -24,6 +34,7 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "path": "^0.12.7",
     "sass": "^1.67.0",
+    "terser": "^5.20.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vite-plugin-dts": "^3.5.4",

@@ -1,18 +1,96 @@
-# Vue 3 + TypeScript + Vite
+# ST-Dialog
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A simple dialog plugin with taskbar of Vue3.
 
-## Recommended IDE Setup
+## Install
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+```bash
+npm install st-dialog
+```
 
-## Type Support For `.vue` Imports in TS
+## Usage
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+### Full Import
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+```ts
+// main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+import StDialog from 'st-dialog'
+import 'st-dialog/dist/st-dialog.css'
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+createApp(App).use(StDialog).mount('#app')
+```
+
+### Composition API
+
+When using Vue's composition API, you can directly use the component in the file's `template` section.
+
+```ts
+<script lang="ts" setup>
+import { getCurrentInstance, markRaw } from 'vue'
+import { StTaskBar } from 'st-dialog'
+import Test from '@/components/Test.vue'
+
+const TestComponent = markRaw(Test)
+const instance = getCurrentInstance()
+
+function addDialog() {
+   if (!instance) return
+   instance.appContext.config.globalProperties.$dialog.addDialog(TestComponent, {
+      title: 'test',
+      args: {
+         msg: 'hello world'
+      }
+   })
+}
+
+</script>
+<template>
+   <div class="container">
+      <button @click="addDialog">add dialog</button>
+   </div>
+   <StTaskBar>
+      <template v-slot:left>
+         <span>leftSide</span>
+      </template>
+      <template v-slot:right>
+         <span>rightSide</span>
+      </template>
+   </StTaskBar>
+</template>
+```
+### Options API
+
+When using Vue’s options API, the component must first be registered using the `components` property on the Vue instance.
+
+```ts
+<script lang="ts">
+import { StTaskBar } from 'st-dialog'
+export default {
+  components: {
+    StTaskBar
+  },
+  methods: {
+      addDialog() {
+         this.$dialog.addDialog(TestComponent, {
+            title: 'test',
+            args: {
+               msg: 'hello world'
+            }
+         })
+      }
+  }
+}
+</script>
+<template>
+   <StTaskBar>
+      <template v-slot:left>
+         <span>leftSide</span>
+      </template>
+      <template v-slot:right>
+         <span>rightSide</span>
+      </template>
+   </StTaskBar>
+</template>
+```
