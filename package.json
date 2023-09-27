@@ -1,6 +1,6 @@
 {
   "name": "st-dialog",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A simple dialog component for Vue 3",
   "type": "module",
   "files": [

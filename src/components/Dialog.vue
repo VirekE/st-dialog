@@ -2,7 +2,7 @@
 import { computed, Ref, ref, reactive, onMounted } from 'vue'
 import type { Component } from 'vue'
 import { useDialogStore } from '@/stores/index'
-import { SquareSmall, CloseSmall, Minus, Sum } from '@icon-park/vue-next'
+import { OffScreenTwo, CloseSmall, Minus, FullScreenTwo } from '@icon-park/vue-next'
 import type { Dialog, Position } from '@/dialog'
 
 const store = useDialogStore()
@@ -24,7 +24,7 @@ const position = computed(() => {
   }
 })
 
-const MaxIcon = computed(() => position.value.max ? Sum : SquareSmall)
+const MaxIcon = computed(() => position.value.max ?  OffScreenTwo : FullScreenTwo)
 const emit = defineEmits<{
   (e: 'on-resize', dialog: Dialog<Component>): any
 }>()
