@@ -60,6 +60,7 @@ function addDialog() {
    </StTaskBar>
 </template>
 ```
+
 ### Options API
 
 When using Vue’s options API, the component must first be registered using the `components` property on the Vue instance.
@@ -84,6 +85,45 @@ export default {
 }
 </script>
 <template>
+   <StTaskBar>
+      <template v-slot:left>
+         <span>leftSide</span>
+      </template>
+      <template v-slot:right>
+         <span>rightSide</span>
+      </template>
+   </StTaskBar>
+</template>
+```
+
+### Props of Dynamic Component
+
+Passing props to the dynamic component is done through the `args` property of the second parameter of the `addDialog` method.
+
+```ts
+<script lang="ts" setup>
+import { getCurrentInstance, markRaw } from 'vue'
+import { StTaskBar, methods } from 'st-dialog'
+import Test from '@/components/Test.vue'
+
+const TestComponent = markRaw(Test)
+const instance = getCurrentInstance()
+
+function addDialog() {
+   const { addDialog } = methods
+   addDialog(TestComponent, {
+      title: 'test',
+      args: {
+         msg: 'hello world'
+      }
+   })
+}
+
+</script>
+<template>
+   <div class="container">
+      <button @click="addDialog">add dialog</button>
+   </div>
    <StTaskBar>
       <template v-slot:left>
          <span>leftSide</span>

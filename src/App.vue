@@ -13,17 +13,26 @@ function mockDialogs(n: number) {
     }
   })
 }
+
+function addDialog() {
+  instance!.appContext.config.globalProperties.$dialog.addDialog(MyComponent, {
+    title: 'test',
+    args: {
+      msg: 'test' + Math.random()
+    }
+  })
+}
+
 onMounted(() => {
   mockDialogs(5)
 })
-
 
 </script>
 
 <template>
   <StTaskBar>
     <template v-slot:left>
-      <span class="left">left</span>
+      <span class="left" @click="addDialog">add</span>
     </template>
     <template v-slot:right>
       <span class="right">right</span>

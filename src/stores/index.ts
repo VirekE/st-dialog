@@ -3,13 +3,24 @@ import { defineStore } from 'pinia'
 import { reactive, UnwrapNestedRefs, computed } from 'vue'
 import type { Component } from 'vue'
 import type { Dialog, DialogOptions, DialogStore } from '@/dialog'
+import md5 from 'crypto-js/md5'
 
 
 const dialogStore: (() => DialogStore<Component>) = () => {
-  const dialogList: UnwrapNestedRefs<Dialog<Component>[]> = reactive([])
-  const count = computed(() => dialogList.length)
-  const visibleDialogList = computed(() => dialogList.filter(dialog => dialog.state.minimized === false))
+  /** 处于活动状态的对话框列表 */
+  const dialogList: UnwrapNestedRefs<Record<string, Dialog<Component>>> = reactive({})
+  const dialogValues = computed(() => Object.values(dialogList))
+  /** 对话框数量 */
+  const count = computed(() => dialogValues.value.length)
+  /** 可见对话框列表 */
+  const visibleDialogList = computed(() => {
+    const result = dialogValues.value.filter(dialog => dialog.state.minimized === false)
+    console.log(result)
+    return result
+  })
+  /** 对话框zIndex队列, 用于控制窗口层级顺序 */
   const indexQueue: UnwrapNestedRefs<string[]> = reactive([])
+  /** 记录每个对话框的层级顺序 */
   const zIndexMap = computed(() => {
     const result: Record<string, number> = {}
     indexQueue.forEach((id, index) => {
@@ -18,12 +29,23 @@ const dialogStore: (() => DialogStore<Component>) = () => {
     return result
   })
 
+  /**
+   * 判断是否在最上层
+   * @param id 对话框id
+   * @returns 是否为最上层
+   */
   function isOnTop(id: string) {
     return indexQueue[indexQueue.length - 1] === id
   }
 
-  function addDialog(component: Component, options: DialogOptions) {
-    const id = crypto.randomUUID()
+  /**
+   * 添加一个对话框
+   * @param component 组件
+   * @param options 选项
+   * @param force 是否强制添加
+   */
+  function addDialog(component: Component, options: DialogOptions, force: boolean = false) {
+    const id = force ? crypto.randomUUID() : md5(JSON.stringify(options)).toString()
     const { innerWidth, innerHeight } = window
     const x = (innerWidth - (options.property?.width || 800)) / 2
     const y = (innerHeight - (options.property?.height || 500)) / 2
@@ -57,21 +79,34 @@ const dialogStore: (() => DialogStore<Component>) = () => {
       },
       args: options.args
     })
-    indexQueue.push(dialog.id)
-    dialogList.push(dialog)
+    if (dialogList[id] !== undefined) {
+      toTop(id)
+    } else {
+      indexQueue.push(dialog.id)
+      dialogList[id] = dialog
+    }
   }
 
+  /**
+   * 移除一个对话框
+   * @param id 对话框id
+   * @returns 是否移除成功
+   */
   function removeDialog(id: string): boolean {
-    const index = dialogList.findIndex(dialog => dialog.id === id)
-    if (index !== -1) {
-      dialogList.splice(index, 1)
+    if (dialogList[id] !== undefined) {
+      delete dialogList[id]
       return true
     }
     return false
   }
 
+  /**
+   * 获取一个对话框
+   * @param id 对话框id
+   * @returns 对话框
+   */
   function getDialog(id: string): Dialog<Component> | undefined {
-    return dialogList.find(dialog => dialog.id === id)
+    return dialogList[id]
   }
   function toTop(id: string): boolean {
     const index = indexQueue.lastIndexOf(id)
@@ -83,24 +118,42 @@ const dialogStore: (() => DialogStore<Component>) = () => {
     return false
   }
 
-  function toggleMinimizeDialog(id: string): boolean {
+  /**
+   * 最小化/换源对话框
+   * @param id 对话框id
+   * @param value 直接设置最小化状态 true最小化 false还原
+   * @returns 是否最小化成功
+   */
+  function toggleMinimizeDialog(id: string, value?: boolean): boolean {
     const dialog = getDialog(id)
     if (dialog) {
-      dialog.state.minimized = !dialog.state.minimized
+      dialog.state.minimized = value === undefined ? !dialog.state.minimized : value
       return true
     }
     return false
   }
 
-  function toggleMaximizeDialog(id: string): boolean {
+  /**
+   * 最大化/还原对话框
+   * @param id 对话框id
+   * @param value 直接设置最大化状态 true最大化 false还原
+   * @returns 是否最大化成功
+   */
+  function toggleMaximizeDialog(id: string, value?: boolean): boolean {
     const dialog = getDialog(id)
     if (dialog) {
-      dialog.state.maximized = !dialog.state.maximized
+      dialog.state.maximized = value === undefined ? !dialog.state.maximized : value
       return true
     }
     return false
   }
 
+  /**
+   * 移动对话框
+   * @param id 对话框id
+   * @param position 位置
+   * @returns 是否移动成功
+   */
   function moveDialog(id: string, position: { x?: number, y?: number, width?: number, height?: number }): boolean {
     const dialog = getDialog(id)
     console.log(position)
@@ -121,6 +174,13 @@ const dialogStore: (() => DialogStore<Component>) = () => {
     }
     return false
   }
+
+  /**
+   * 调整对话框大小
+   * @param id 对话框id
+   * @param size 大小
+   * @returns 是否调整成功
+   */
   function resizeDialog(id: string, size: { width?: number, height?: number }): boolean {
     const dialog = getDialog(id)
     if (dialog) {
@@ -134,6 +194,12 @@ const dialogStore: (() => DialogStore<Component>) = () => {
     }
     return false
   }
+
+  /**
+   * 获取对话框的zIndex
+   * @param id 对话框id
+   * @returns zIndex
+   */
   function getZIndex(id: string) {
     return zIndexMap.value[id] || 0
   }

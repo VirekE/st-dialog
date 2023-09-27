@@ -1,7 +1,7 @@
 import { ComputedRef, UnwrapNestedRefs } from 'vue'
 
 export declare interface DialogStore<T> {
-  dialogList: UnwrapNestedRefs<Dialog<T>[]>,
+  dialogList: UnwrapNestedRefs<Record<string, Dialog<T>>>,
   count: ComputedRef<number>,
   visibleDialogList: ComputedRef<Dialog<T>[]>,
   indexQueue: UnwrapNestedRefs<string[]>,
