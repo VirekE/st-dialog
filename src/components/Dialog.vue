@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, Ref, ref, reactive, onMounted } from 'vue'
+import { computed, Ref, ref, reactive } from 'vue'
 import type { Component } from 'vue'
 import { useDialogStore } from '@/stores/index'
 import { OffScreenTwo, CloseSmall, Minus, FullScreenTwo } from '@icon-park/vue-next'
@@ -28,9 +28,6 @@ const MaxIcon = computed(() => position.value.max ?  OffScreenTwo : FullScreenTw
 const emit = defineEmits<{
   (e: 'on-resize', dialog: Dialog<Component>): any
 }>()
-onMounted(() => {
-  initDialogSize()
-})
 
 interface TouchPosition {
   x: number,
@@ -253,34 +250,7 @@ function getDocumentSize() {
   const { innerWidth, innerHeight } = window
   return { docWidth: innerWidth, docHeight: innerHeight }
 }
-/**
- * 初始化窗口尺寸和位置
- */
-function initDialogSize() {
-  // const id_value = id.value
-  // const instance = getCurrentInstance()
-  // const { docWidth, docHeight } = getDocumentSize()
-  // const centerX = docWidth / 2
-  // const centerY = docHeight / 2
-  // if (!instance?.proxy?.$el) return
-  // const { offsetWidth, offsetHeight } = instance.proxy.$el as HTMLDivElement
-  // const p = position.value
-  // p.top = Math.floor(centerY - offsetHeight / 2)
-  // p.left = Math.floor(centerX - offsetWidth / 2)
-  // if (position) {
-  //   const { top, left, width, height } = position.value
-  //   // store.toggleMaximizeDialog(id_value)
-  //   if (width) store.resizeDialog(id_value, { width })
-  //   else {
-  //     store.moveDialog(id_value, { x: Math.floor(centerX - offsetWidth / 2) })
-  //   }
-  //   if (height) store.resizeDialog(id_value, { height })
-  //   else {
-  //     store.moveDialog(id_value, { y: Math.floor(centerY - offsetHeight / 2) })
-  //   }
-  //   store.moveDialog(id_value, { x: left, y: top })
-  // }
-}
+
 /**
  * 拖拽窗口处理方法：
  * 当鼠标点击标题时对文档添加鼠标移动事件监听， 并在鼠标抬起后清除
@@ -400,7 +370,7 @@ function limitedPosition(x: number, y: number): Position {
 <template>
   <div
     v-show="!dialog.state.minimized"
-    class="ys-dialog"
+    class="st-dialog"
     :style="dialogStyle"
     :movable="property.movable"
     :resizable="property.resizable"

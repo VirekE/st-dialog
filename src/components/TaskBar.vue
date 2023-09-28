@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { computed, UnwrapNestedRefs, reactive, getCurrentInstance } from 'vue'
+import { computed, UnwrapNestedRefs, reactive, getCurrentInstance, ref, Ref, nextTick } from 'vue'
 import type { Component } from 'vue'
 import { useDialogStore } from '@/stores/index'
 import STDialog from '@/components/Dialog.vue'
 import type { Dialog } from '@/dialog'
 
 const instance = getCurrentInstance()
-
+const menuVisible = ref(false)
+const menu: Ref<HTMLDivElement[] | null> = ref(null)
+const menuStyle: UnwrapNestedRefs<Record<string, string>> = reactive({
+  top: '-1000px',
+  left: '-1000px',
+})
 const props = defineProps<{
   class?: string
   style?: string
@@ -14,6 +19,47 @@ const props = defineProps<{
 const store = useDialogStore()
 const dialogList = computed(() => store.dialogList)
 const zIndexCache: UnwrapNestedRefs<string[]> = reactive([])
+
+function showMenu(event: MouseEvent) {
+  menuVisible.value = true
+  nextTick(() => {
+    const { innerWidth, innerHeight } = window
+    const { screenX, screenY } = event
+    const { offsetWidth, offsetHeight } = menu.value![0]
+    const offsetY = offsetHeight + 5
+    const x =
+      screenX + (offsetWidth || 0) > innerWidth
+        ? innerWidth - (offsetWidth || 0)
+        : screenX
+    const y =
+      screenY + (offsetHeight || 0) > innerHeight
+        ? innerHeight - offsetY
+        : screenY
+    menuStyle.top = `${y}px`
+    menuStyle.left = `${x}px`
+    const hideMenu = (evt: MouseEvent) => {
+      if ((evt.target as HTMLElement).classList.contains('st-menu')) return
+      menuVisible.value = false
+      document.removeEventListener('click', hideMenu)
+    }
+    document.addEventListener('click', hideMenu)
+  })
+}
+
+function closeThis(id: string) {
+	store.removeDialog(id)
+	menuVisible.value = false
+}
+
+function closeOthers(id: string) {
+  store.removeOthers(id)
+  menuVisible.value = false
+}
+
+function closeAll() {
+  store.removeAll()
+  menuVisible.value = false
+}
 
 function getDialogZIndex(id: string) {
   const index = zIndexCache.indexOf(id)
@@ -45,7 +91,7 @@ function resizeHandle(dialog: Dialog<Component>) {
 
 <template>
 <Teleport to="body">
-  <div class="task-bar" :class="props.class" :style="props.style">
+  <div class="st-task-bar" :class="props.class" :style="props.style">
     <div class="left-part"><slot name="left" /></div>
     <div class="middle-part">
       <div class="dialog-blank"
@@ -55,12 +101,32 @@ function resizeHandle(dialog: Dialog<Component>) {
         :style="{ zIndex: getDialogZIndex(dialog.id) }"
         :class="{ mini: dialog.state.minimized }"
         @click="clickHandler(dialog)"
+        @contextmenu.prevent="showMenu"
         >
         <span>{{ dialog.title }}</span>
         <Teleport to="body">
           <STDialog :dialog="dialog" @on-resize="resizeHandle">
             <component :is="dialog.component" :ref="dialog.id" :args="dialog.args" />
           </STDialog>
+          <div
+            v-if="menuVisible"
+            class="st-menu st-menu-context"
+            :style="menuStyle"
+            ref="menu"
+          >
+            <span
+              class="st-menu menu-item"
+              @click="closeThis(dialog.id)"
+            >关闭</span>
+            <span
+              class="st-menu menu-item"
+              @click="closeOthers(dialog.id)"
+            >关闭其他</span>
+            <span
+              class="st-menu menu-item"
+              @click="closeAll"
+            >全部关闭</span>
+          </div>
         </Teleport>
       </div>
     </div>

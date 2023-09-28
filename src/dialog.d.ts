@@ -11,6 +11,8 @@ export declare interface DialogStore<T> {
   getDialog(id: string): Dialog<T> | undefined,
   addDialog: (component: T, options: DialogOptions) => void,
   removeDialog: (id: string) => boolean,
+  removeOthers: (id: string) => void,
+  removeAll: () => void,
   toggleMinimizeDialog: (id: string) => boolean,
   toggleMaximizeDialog: (id: string) => boolean,
   moveDialog(id: string, position: { x?: number, y?: number, width?: number, height?: number }): boolean,

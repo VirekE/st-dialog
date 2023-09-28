@@ -88,6 +88,31 @@ const dialogStore: (() => DialogStore<Component>) = () => {
   }
 
   /**
+   * 移除其他对话框
+   * @param id 对话框id
+   */
+  function removeOthers(id: string) {
+    const index = indexQueue.lastIndexOf(id)
+    if (index >= 0) {
+      indexQueue.splice(0, index)
+    }
+    Object.keys(dialogList).forEach(key => {
+      if (key !== id) {
+        delete dialogList[key]
+      }
+    })
+  }
+  /**
+   * 移除所有对话框
+   */
+  function removeAll() {
+    indexQueue.splice(0, indexQueue.length)
+    Object.keys(dialogList).forEach(key => {
+      delete dialogList[key]
+    })
+  }
+
+  /**
    * 移除一个对话框
    * @param id 对话框id
    * @returns 是否移除成功
@@ -217,7 +242,9 @@ const dialogStore: (() => DialogStore<Component>) = () => {
     moveDialog,
     resizeDialog,
     getZIndex,
-    isOnTop
+    isOnTop,
+    removeOthers,
+    removeAll,
   }
 }
 
