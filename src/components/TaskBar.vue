@@ -24,19 +24,24 @@ function showMenu(event: MouseEvent) {
   menuVisible.value = true
   nextTick(() => {
     const { innerWidth, innerHeight } = window
-    const { screenX, screenY } = event
+    const { clientX, clientY } = event
     const { offsetWidth, offsetHeight } = menu.value![0]
+
+    const offsetX = offsetWidth + 5
     const offsetY = offsetHeight + 5
+
     const x =
-      screenX + (offsetWidth || 0) > innerWidth
-        ? innerWidth - (offsetWidth || 0)
-        : screenX
+      clientX + (offsetWidth || 0) > innerWidth
+          ? innerWidth - offsetX
+          : clientX
     const y =
-      screenY + (offsetHeight || 0) > innerHeight
-        ? innerHeight - offsetY
-        : screenY
+      clientY + (offsetHeight || 0) > innerHeight
+          ? innerHeight - offsetY
+          : clientY
     menuStyle.top = `${y}px`
     menuStyle.left = `${x}px`
+
+    console.log(x, y, screenX, screenY, offsetWidth, offsetHeight)
     const hideMenu = (evt: MouseEvent) => {
       if ((evt.target as HTMLElement).classList.contains('st-menu')) return
       menuVisible.value = false
