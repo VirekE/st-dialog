@@ -100,13 +100,15 @@ export default {
 
 Passing props to the dynamic component is done through the `args` property of the second parameter of the `addDialog` method.
 
+
+#### App.vue
 ```ts
 <script lang="ts" setup>
 import { getCurrentInstance, markRaw } from 'vue'
 import { StTaskBar, methods } from 'st-dialog'
-import Test from '@/components/Test.vue'
+import ComponentInDialog from '@/components/ComponentInDialog.vue'
 
-const TestComponent = markRaw(Test)
+const TestComponent = markRaw(ComponentInDialog)
 const instance = getCurrentInstance()
 
 function addDialog() {
@@ -133,4 +135,51 @@ function addDialog() {
       </template>
    </StTaskBar>
 </template>
+```
+#### ComponentInDialog.vue
+
+```ts
+<script lang="ts" setup>
+const props = defineProps < {
+  args?: Record<string, any>
+}>()
+</script>
+<template>
+  <div class="test">{{props.args?.msg}}</div>
+</template>
+```
+
+
+### Resize Event
+
+```ts
+// ComponentInDialog.vue
+<script lang="ts" setup>
+import type { Dialog } from '@/dialog'
+import type { Component } from 'vue'
+
+const props = defineProps < {
+  args?: Record<string, any>
+}>()
+
+function onResize(dialog: Dialog<Component>) {
+  console.log('Resized', dialog)
+}
+
+defineExpose({
+  onResize
+})
+
+</script>
+
+<template>
+  <div class="test">{{props.args?.msg}}</div>
+</template>
+<style scoped lang="sass">
+.test
+  width: 100%
+  height: 100%
+  background: #000
+  color: #FFF
+</style>
 ```
