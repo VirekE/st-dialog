@@ -15,7 +15,7 @@ const dialogStore: (() => DialogStore<Component>) = () => {
   /** 可见对话框列表 */
   const visibleDialogList = computed(() => {
     const result = dialogValues.value.filter(dialog => dialog.state.minimized === false)
-    console.log(result)
+    // console.log(result)
     return result
   })
   /** 对话框zIndex队列, 用于控制窗口层级顺序 */
